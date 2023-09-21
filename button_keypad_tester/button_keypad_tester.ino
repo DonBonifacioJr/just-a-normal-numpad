@@ -47,6 +47,8 @@ BubbleOver bubbles;
 long oldPosition  = -999;
 long newPosition;
 
+char oldKey = '0';
+
 
 void setup() {
   Serial.begin(9600);
@@ -99,13 +101,20 @@ void loop() {
   encoderFunctionButton();
 
   // Menu Button
-  menuSelectorButton(currKeyboard, lastMenuButtonState, pressStart);
+  menuSelectorButton(currKeyboard, lastMenuButtonState, pressStart, bubbles);
 
   
   key.single_key_switcher(currKeyboard);
   key.readKey();
+  
   char lastKey = key.getLastKey();
-  bubbles.loop(lastKey);
+  if (lastKey != oldKey) {
+    bubbles.setFormatNum(0);
+    bubbles.setMyMessage(String(lastKey));
+    oldKey = lastKey;
+  }
+  
+  bubbles.loop();
   
 }
 
@@ -124,7 +133,7 @@ void encoderFunctionButton() {
   }
 }
 
-void menuSelectorButton(int &currKeyboard, int &lastMenuButtonState, long unsigned &pressStart) {
+void menuSelectorButton(int &currKeyboard, int &lastMenuButtonState, long unsigned &pressStart, BubbleOver &bubbles) {
   int buttonState = digitalRead(selectorButton);
   
 
@@ -137,6 +146,7 @@ void menuSelectorButton(int &currKeyboard, int &lastMenuButtonState, long unsign
       if ((millis() - pressStart) >= 1500) {
         // Long-press is detected and keyboard changes!
         Serial.println("Keyboard has been Changed!");
+        bubbles.keyChangeMessage();
         if (currKeyboard == 2) {
           currKeyboard = 0;
         }
@@ -150,36 +160,6 @@ void menuSelectorButton(int &currKeyboard, int &lastMenuButtonState, long unsign
   }
 
   lastMenuButtonState = buttonState;
-
-//  
-//    long unsigned pressStart = millis();
-//  }
-//  if (buttonState == LOW && lastButtonState == HIGH) {
-//    buttonPressTime = millis();  // Record the time when the button was pressed
-//  }
-//
-//  // Check for button release after a press and hold
-//  if (buttonState == HIGH && lastButtonState == LOW) {
-//    // Calculate the time the button was held
-//    unsigned long buttonHoldTime = millis() - buttonPressTime;
-//
-//    // If the button was held for a certain duration (e.g., 1000 milliseconds), trigger an action
-//    if (buttonHoldTime >= 1000) {
-//      // Your action code goes here
-//      Serial.println("Button held for 1 second");
-//    }
-//  if ((curr_time - lastSelectorPress) > debounceDelay) //if the time between the last buttonChange is greater than the debounceTime
-//  {
-//    if (buttonState == LOW) //if button is pressed and was released last change
-//    {
-//      if (currKeyboard == 2) {
-//        currKeyboard = 0;
-//      }
-//      else {
-//        currKeyboard += 1;
-//      }
-//    }
-//  }
 }
 
 void menuOpen(int &menuState, int buttonPin) {

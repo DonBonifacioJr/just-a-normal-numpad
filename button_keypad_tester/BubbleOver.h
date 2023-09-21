@@ -17,6 +17,8 @@ class BubbleOver {
     int circleX[10], circleY[10], circleRadius[10];
     long unsigned lastTime = 0;
     int bubbleDelay = 50;
+    String myMessage = " ";
+    int formatNum = 0;
     
 
   public:
@@ -45,15 +47,13 @@ class BubbleOver {
       display.clearDisplay();
     }
 
-    void loop(char myMessage) {
+    void loop() {
       long unsigned currTime = millis();
       if (currTime - lastTime > bubbleDelay) {
         display.clearDisplay(); // clear previous frame
         //display.drawBitmap(0, 0, epd_bitmap_bocchi128x64, 128, 64, WHITE);
-        display.setTextSize(3); // set text size
-        display.setTextColor(WHITE); // set text color
-        display.setCursor(58, 26); // set text cursor
-        display.println(myMessage); // display loading text
+        printFormat();
+        printMessage(); // display loading text
 //        if (key.getKeyHold1() == 1) {
 //          numCircles = 4;
 //        }
@@ -73,6 +73,10 @@ class BubbleOver {
       }
       
     }
+
+    void printMessage() {
+      display.println(myMessage);
+    }
     
     void deletion() {
       delete this;
@@ -80,5 +84,41 @@ class BubbleOver {
 
     int getBubbleDelay() {
       return bubbleDelay;
+    }
+
+    void setMyMessage(String myNewMessage) {
+      myMessage = myNewMessage;
+    }
+
+    void setFormatNum (int newFormatNum) {
+      formatNum = newFormatNum;
+    }
+    
+    void printFormat() {
+      switch (formatNum) {
+        case 0:
+          display.setTextSize(3); // set text size
+          display.setTextColor(WHITE); // set text color
+          display.setCursor(58, 26); // set text cursor
+          break;
+        case 1:
+          display.setTextSize(2); // set text size
+          display.setTextColor(WHITE); // set text color
+          display.setCursor(6, 26); // set text cursor
+          break;
+        default:
+          display.setTextSize(3); // set text size
+          display.setTextColor(WHITE); // set text color
+          display.setCursor(58, 26); // set text cursor
+          break;
+      }
+    }
+
+    void keyChangeMessage() {
+      setMyMessage("Key Change");
+      setFormatNum(1);
+      printFormat();
+      printMessage();
+      
     }
 };
