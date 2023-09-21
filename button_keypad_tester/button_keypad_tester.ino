@@ -1,5 +1,3 @@
-
-//#include <HID-Settings.h>
 #include <SPI.h>
 #include <Wire.h>
 //#include <Adafruit_GFX.h>
@@ -8,31 +6,36 @@
 #include <Encoder.h>
 #include "NewKeys.h"
 
+// Keyboard Variables
 NewKeys key;
 int currKeyboard = 0;
 
 const int pinCols[3] = {7, 8, 9}; //pins of the differents columns 10 11 12
 const int pinRows[3] = {6, 5, 4}; //pins of the differents rows 9 8 7
 
+// Encoder Set-up Variables
 Encoder myEnc(0, 1);
 int encoderButton = 10;
 int encoderState;
 int lastEncoderState = 1;
 long unsigned lastEncoderPress;
 
+// Variables for the current Keyboard Select Button
 int selectorButton = 16;
-long unsigned lastSelectorPress;
+int lastMenuButtonState = 0;
+long unsigned pressStart = 0;
 
+// Bubble Over Effect initial vars
 long unsigned lastBubbleTime = 0;
 int bubbleMode = 0;
+
+
 int buttonPin = 6;
 int debounceDelay = 150;
 
 int menuState = 0;
 int lastMenuState;
 
-//SingleKey key;
-//BubblingCircles bubble;
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
 
 #include "BubbleOver.h"
@@ -59,7 +62,14 @@ void setup() {
     pinMode(pinRows[i], INPUT);
   }
   //Consumer.begin();
-  loading.setup();
+  //loading.setup();
+
+   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // initialize display
+   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+     Serial.println(F("SSD1306 allocation failed"));
+     for (;;); // Don't proceed, loop forever
+   }
+  loading.renderLoad();
   loading.deletion();
   //bubbles.setup();
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
@@ -83,10 +93,13 @@ void loop() {
 //    }
 //    //Serial.println(newPosition);
 //  }
-  
+
+  // Encoder Function
   encoderControl();
   encoderFunctionButton();
-  menuSelectorButton(currKeyboard);
+
+  // Menu Button
+  menuSelectorButton(currKeyboard, lastMenuButtonState, pressStart);
 
   
   key.single_key_switcher(currKeyboard);
@@ -98,6 +111,7 @@ void loop() {
 
 
 void encoderFunctionButton() {
+
   int buttonState = digitalRead(encoderButton);
   long unsigned curr_time = millis();
   if ((curr_time - lastEncoderPress) > debounceDelay) //if the time between the last buttonChange is greater than the debounceTime
@@ -110,21 +124,62 @@ void encoderFunctionButton() {
   }
 }
 
-void menuSelectorButton(int &currKeyboard) {
+void menuSelectorButton(int &currKeyboard, int &lastMenuButtonState, long unsigned &pressStart) {
   int buttonState = digitalRead(selectorButton);
-  long unsigned curr_time = millis();
-  if ((curr_time - lastSelectorPress) > debounceDelay) //if the time between the last buttonChange is greater than the debounceTime
-  {
-    if (buttonState == LOW) //if button is pressed and was released last change
-    {
-      if (currKeyboard == 2) {
-        currKeyboard = 0;
-      }
-      else {
-        currKeyboard += 1;
+  
+
+  if (buttonState != lastMenuButtonState) {
+    pressStart = millis();
+  }
+  
+  if ((millis() - pressStart) >= 75) {
+    if (buttonState == 0) {
+      if ((millis() - pressStart) >= 1500) {
+        // Long-press is detected and keyboard changes!
+        Serial.println("Keyboard has been Changed!");
+        if (currKeyboard == 2) {
+          currKeyboard = 0;
+        }
+        else {
+          currKeyboard += 1;
+        }
+        pressStart = millis();
       }
     }
+    // The button has been released
   }
+
+  lastMenuButtonState = buttonState;
+
+//  
+//    long unsigned pressStart = millis();
+//  }
+//  if (buttonState == LOW && lastButtonState == HIGH) {
+//    buttonPressTime = millis();  // Record the time when the button was pressed
+//  }
+//
+//  // Check for button release after a press and hold
+//  if (buttonState == HIGH && lastButtonState == LOW) {
+//    // Calculate the time the button was held
+//    unsigned long buttonHoldTime = millis() - buttonPressTime;
+//
+//    // If the button was held for a certain duration (e.g., 1000 milliseconds), trigger an action
+//    if (buttonHoldTime >= 1000) {
+//      // Your action code goes here
+//      Serial.println("Button held for 1 second");
+//    }
+//  if ((curr_time - lastSelectorPress) > debounceDelay) //if the time between the last buttonChange is greater than the debounceTime
+//  {
+//    if (buttonState == LOW) //if button is pressed and was released last change
+//    {
+//      if (currKeyboard == 2) {
+//        currKeyboard = 0;
+//      }
+//      else {
+//        currKeyboard += 1;
+//      }
+//    }
+//  }
 }
 
 void menuOpen(int &menuState, int buttonPin) {

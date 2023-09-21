@@ -30,13 +30,15 @@ class LoadingBar {
       display.clearDisplay(); // clear display when the object is destroyed
     }
 
-    void setup() {
-      display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // initialize display
-      if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-        Serial.println(F("SSD1306 allocation failed"));
-        for (;;); // Don't proceed, loop forever
-      }
-      
+//    void setup() {
+//      display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // initialize display
+//      if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+//        Serial.println(F("SSD1306 allocation failed"));
+//        for (;;); // Don't proceed, loop forever
+//      }
+//    }
+
+    void renderLoad() {
       display.clearDisplay();
 
       display.setTextSize(2); // set text size

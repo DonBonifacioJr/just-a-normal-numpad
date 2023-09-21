@@ -45,7 +45,7 @@ class BubbleOver {
       display.clearDisplay();
     }
 
-    void loop(char lastKey) {
+    void loop(char myMessage) {
       long unsigned currTime = millis();
       if (currTime - lastTime > bubbleDelay) {
         display.clearDisplay(); // clear previous frame
@@ -53,7 +53,7 @@ class BubbleOver {
         display.setTextSize(3); // set text size
         display.setTextColor(WHITE); // set text color
         display.setCursor(58, 26); // set text cursor
-        display.println(lastKey); // display loading text
+        display.println(myMessage); // display loading text
 //        if (key.getKeyHold1() == 1) {
 //          numCircles = 4;
 //        }
