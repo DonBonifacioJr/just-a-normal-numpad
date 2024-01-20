@@ -1,6 +1,12 @@
+/*
+  Specifies the functions of a keypad object. Keypad objects are only utilized when a keypad is utilized.
+  For pure key input and output refer to Newkeys.h
+*/
+
 #include "keypad.h"
 #include "RandomBetweenRanges.h"
 #include "MenuState.h"
+#include "NewKeys.h"
 
 // Display Bubbles
 int numCircles = 4;
@@ -15,8 +21,10 @@ char oldKey = '0';
 
 // Keyboard
 NewKeys key;
+int initialKeyboard = 0;
 
 void keypad(MenuState& currState, Adafruit_SSD1306& display) {
+  display.setTextColor(WHITE); // set text color
   if (!setupStatus) {
     for (int i = 0; i < numCircles; i++) {
       circleX[i] = generateRandomNumber(0, 128, 34, 94); // random x coordinate
@@ -70,17 +78,14 @@ void printKeysFormat(Adafruit_SSD1306& display) {
   switch (formatNum) {
     case 0:
       display.setTextSize(3); // set text size
-      display.setTextColor(WHITE); // set text color
       display.setCursor(58, 26); // set text cursor
       break;
     case 1:
       display.setTextSize(2); // set text size
-      display.setTextColor(WHITE); // set text color
       display.setCursor(6, 26); // set text cursor
       break;
     default:
       display.setTextSize(3); // set text size
-      display.setTextColor(WHITE); // set text color
       display.setCursor(58, 26); // set text cursor
       break;
   }
@@ -95,8 +100,8 @@ int buttonState = HIGH;
 int lastButtonState = HIGH;
 unsigned long lastKeyChangeDebounceTime = 0;
 unsigned long lastKCPressTime = 0;
-unsigned long debounceKeyChangeDelay = 50;  // Adjust this debounce delay as needed
-unsigned long timeBetweenPresses = 500;  // Set the desired time window between consecutive presses
+//unsigned long debounceKeyChangeDelay = 50;  // Adjust this debounce delay as needed
+//unsigned long timeBetweenPresses = 500;  // Set the desired time window between consecutive presses
 
 
 void keypadChange(NewKeys& keys, Adafruit_SSD1306& display) {
@@ -108,7 +113,7 @@ void keypadChange(NewKeys& keys, Adafruit_SSD1306& display) {
     lastKeyChangeDebounceTime = millis();
   }
 
-  if ((millis() - lastKeyChangeDebounceTime) > debounceKeyChangeDelay) {
+  if ((millis() - lastKeyChangeDebounceTime) > 50) {
     if (reading != buttonState) {
       buttonState = reading;
 
@@ -116,7 +121,7 @@ void keypadChange(NewKeys& keys, Adafruit_SSD1306& display) {
         // Button has been pressed
 
         // Check if it's within the time window since the last press
-        if ((millis() - lastKCPressTime) <= timeBetweenPresses) {
+        if ((millis() - lastKCPressTime) <= 500) {
           // Button pressed twice within the time window
           Serial.println("Keys Changed");
           myMessage = "Key Change";

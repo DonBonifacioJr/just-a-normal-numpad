@@ -18,6 +18,7 @@ int pinCols[3]={7,8,9};
 int pinRows[3]={6,5,4};
     
   public:
+    // currKeyboard must be set prior to calling the function to change keyboard
     void single_key_switcher() {
       char keys_1 [3][3] = {
         {'1', '2', '3'},
@@ -78,24 +79,52 @@ int pinRows[3]={6,5,4};
       }
     }
 
+    // Read key inputs.
     void readKey() {
+      // When high is read on the row where column is set to high, the button is considered pressed
       for (int c = 0; c < 3; c++) {
+        // Sets current column to high
         digitalWrite(pinCols[c], HIGH);
         //Serial.println(pinCols[c]);
         for (int r = 0; r < 3; r++) {
           if (digitalRead(pinRows[r]) == HIGH) {
             Keyboard.press(keys[r][c]);
+            // Print current key being pressed
             Serial.println("Current Key: ");
             Serial.println(keys[r][c]);
+            
             lastKey = keys[r][c];
           }
           else {
             Keyboard.release(keys[r][c]);
           }
         }
+        // Set the column back to low
         digitalWrite(pinCols[c], LOW);
       }
       //delay(1);
+    }
+
+    char readInput() {
+      int sum = 0;
+      currKeyboard = 0;
+      single_key_switcher();
+      for (int c = 0; c < 3; c++) {
+        // Sets current column to high
+        digitalWrite(pinCols[c], HIGH);
+        for (int r = 0; r < 3; r++) {
+          if (digitalRead(pinRows[r]) == HIGH) {
+            
+            sum += keys[r][c];
+            
+          }
+        }
+        // Set the column back to low
+        digitalWrite(pinCols[c], LOW);
+      }
+
+      //Serial.println(sum);
+      return sum;
     }
 
     char getLastKey() {
@@ -111,5 +140,7 @@ int pinRows[3]={6,5,4};
     }
 
 };
+
+//NewKeys key;
 
 #endif

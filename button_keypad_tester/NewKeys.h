@@ -84,6 +84,11 @@ int pinRows[3]={6,5,4};
       //delay(1);
     }
 
+    char readInput() {
+      
+      
+    }
+
     char getLastKey() {
       return lastKey;
     }

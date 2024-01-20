@@ -26,8 +26,6 @@ void setup() {
   for(int i = 5; i < 9; i++) {
     pinMode(i, INPUT_PULLUP);
   }
-
-
 //  pinMode(backButtonPin, INPUT_PULLUP);
 //  pinMode(playButtonPin, INPUT_PULLUP);
 //  pinMode(skipButtonPin, INPUT_PULLUP);

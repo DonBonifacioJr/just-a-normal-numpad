@@ -44,7 +44,7 @@ class LoadingBar {
       display.setTextSize(2); // set text size
       display.setTextColor(WHITE); // set text color
       display.setCursor(22, 28); // set text cursor
-      display.println("Anemone"); // display loading text
+      display.println("anemone"); // display loading text
 
       display.drawRect(loadingBarX - 1, loadingBarY - 1, loadingBarWidth + 2, loadingBarHeight + 2, WHITE); // draw loading bar border
 
@@ -52,19 +52,21 @@ class LoadingBar {
       for (int i = 0; i <= 100; i += 2) {
         display.fillRect(loadingBarX, loadingBarY, i * loadingBarWidth / 100, loadingBarHeight, WHITE); // draw loading bar
         display.display(); // display frame
-        delay(30); // pause to control animation speed
+        delay(15); // pause to control animation speed
       }
-      delay(175);
+      delay(90);
 
       loadingComplete = true; // loading is now complete
       display.clearDisplay(); // clear screen
- 
+ /*
       display.setCursor(14, 26); // set text cursor
       display.println("by semi7"); // display startup complete text
       display.display(); // display frame
       delay(1000);
       display.clearDisplay();
       display.display(); // display frame
+*/
+      display.display();
       delay(100);
     }
 
